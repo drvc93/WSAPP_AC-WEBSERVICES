@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+Este archivo es utilizado por el proceso de paquete/publicación de nuestro proyecto Web. Puede personalizar el comportamiento de este proceso
+editando este archivo MSBuild. Para conocer más acerca de esto, visite http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAY/U81WUVekeksqhejMzTYgAAAAACAAAAAAAQZgAAAAEAACAAAADDlhmWZyeGIL6T0l0j343zwI2WgD5R0J1SifPJaLHpIwAAAAAOgAAAAAIAACAAAABIK9dVqXWjgeWvVSkNg26clDjFJ0npIkm75CX+64VtySAAAAAJ5NQCOSI2g7r7cUQyTZRHrHDsZ5U0zYDNx2jlaD9EukAAAABfA+80XxPD+6YznQT9763TP7KA1HWsjsxsHIbSLkanHNZzPXX3/QK4LduCNf52/86NLB5KK3DV4arr7w825orJ</EncryptedPassword>
+    <_PublishTargetUrl>ftp://ftp.Smarterasp.net/AC</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="ACWebService.asmx">
+      <publishTime>09/10/2016 13:22:25</publishTime>
+    </File>
+    <File Include="ApplicationInsights.config">
+      <publishTime>09/10/2016 13:21:38</publishTime>
+    </File>
+    <File Include="bin/ApplicationInsights.config">
+      <publishTime>09/10/2016 13:21:38</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
+      <publishTime>12/07/2015 19:04:38</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.DependencyCollector.dll">
+      <publishTime>06/06/2016 15:40:16</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.PerfCounterCollector.dll">
+      <publishTime>06/06/2016 15:40:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.ServerTelemetryChannel.dll">
+      <publishTime>06/06/2016 10:45:24</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.Web.dll">
+      <publishTime>06/06/2016 15:40:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.AI.WindowsServer.dll">
+      <publishTime>06/06/2016 15:40:34</publishTime>
+    </File>
+    <File Include="bin/Microsoft.ApplicationInsights.dll">
+      <publishTime>06/06/2016 10:42:24</publishTime>
+    </File>
+    <File Include="bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll">
+      <publishTime>06/15/2015 02:06:24</publishTime>
+    </File>
+    <File Include="bin/roslyn/csc.exe">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.Build.Tasks.CodeAnalysis.dll">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.CSharp.dll">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.dll">
+      <publishTime>06/18/2015 20:19:44</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CodeAnalysis.VisualBasic.dll">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.CSharp.Core.targets">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/Microsoft.VisualBasic.Core.targets">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/System.Collections.Immutable.dll">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/System.Reflection.Metadata.dll">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/vbc.exe">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/VBCSCompiler.exe">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/roslyn/VBCSCompiler.exe.config">
+      <publishTime>06/18/2015 20:19:46</publishTime>
+    </File>
+    <File Include="bin/WSAPP.dll">
+      <publishTime>09/11/2016 17:03:09</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>09/10/2016 13:21:39</publishTime>
+    </File>
+    <File Include="scripts/ai.0.22.19-build00125.js">
+      <publishTime>09/10/2016 13:21:39</publishTime>
+    </File>
+    <File Include="scripts/ai.0.22.19-build00125.min.js">
+      <publishTime>09/10/2016 13:21:39</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>09/11/2016 17:04:00</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
