@@ -16,8 +16,10 @@ namespace WSAPP
         private string celular;
         private string fechaRegistro;
         private string tipoUsuario;
+        private string estado;
+        private string correo;
 
-        public Socio (int codSoc , string Dni , string Nombres , string apellidopat , string apellidomat , string Puesto , string Celular , string FechaReg , string TipoUser)
+        public Socio (int codSoc , string Dni , string Nombres , string apellidopat , string apellidomat , string Puesto , string Celular , string FechaReg , string TipoUser, string Estado , string Correo)
         {
 
             this.codSocio = codSoc;
@@ -29,6 +31,8 @@ namespace WSAPP
             this.celular = Celular;
             this.fechaRegistro = FechaReg;
             this.tipoUsuario = TipoUser;
+            this.estado = Estado;
+            this.correo = Correo;
 
         }
 
@@ -148,6 +152,32 @@ namespace WSAPP
             set
             {
                 this.tipoUsuario = value;
+            }
+        }
+
+        public string Estado
+        {
+            get
+            {
+                return estado;
+            }
+
+            set
+            {
+                this.estado = value;
+            }
+        }
+
+        public string Correo
+        {
+            get
+            {
+                return correo;
+            }
+
+            set
+            {
+                this.correo = value;
             }
         }
     }

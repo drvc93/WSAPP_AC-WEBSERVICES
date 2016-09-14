@@ -61,6 +61,8 @@ namespace WSAPP
                     sc.Puesto= dt.Rows[i]["Puesto"].ToString();
                     sc.Celular = dt.Rows[i]["Celular"].ToString();
                     sc.FechaRegistro = dt.Rows[i]["FechaRegistro"].ToString();
+                    sc.Estado = dt.Rows[i]["Estado"].ToString();
+                    sc.Correo = dt.Rows[i]["Correo"].ToString();
 
                     listSoc.Add(sc);
 
@@ -70,6 +72,99 @@ namespace WSAPP
             }
 
             return listSoc.ToArray();
+
+
+
+        }
+
+        [WebMethod]
+        public Seccion[] GetSecciones(string accion, string codSeccion) {
+
+            List<Seccion> listSecc = new List<Seccion>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_SECCIONES", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSeccion", codSeccion);
+            
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    Seccion sec = new Seccion();
+                    sec.Codigo = dt.Rows[i]["CodigoSeccion"].ToString();
+                    sec.Descripcion = dt.Rows[i]["DescripSeccion"].ToString();
+                    sec.Fecha = dt.Rows[i]["Fecha"].ToString();
+                   
+
+                    listSecc.Add(sec);
+
+                }
+
+
+            }
+
+            return listSecc.ToArray();
+
+
+
+
+
+        }
+
+        [WebMethod]
+
+        public string InserSocio(string accion,string codSocio ,string dni, string nombres, string apePat , string apeMat ,
+                                    string puesto, string celular,string tipoUs,string userReg,string correo)
+        {
+            string res = "";
+             SqlConnection cn = con.conexion();
+            SqlCommand sqlcmd = new SqlCommand("SPI_AC_SOCIO", cn);
+            sqlcmd.Connection = cn;
+            sqlcmd.CommandType = CommandType.StoredProcedure;
+            cn.Open();
+
+            sqlcmd.Parameters.AddWithValue("@accion", accion);
+           
+            sqlcmd.Parameters.AddWithValue("@dni", dni);
+            sqlcmd.Parameters.AddWithValue("@nombres", nombres.Trim().ToUpper());
+            sqlcmd.Parameters.AddWithValue("@apePat", apePat.Trim().ToUpper());
+            sqlcmd.Parameters.AddWithValue("@apeMat", apeMat.Trim().ToUpper());
+            sqlcmd.Parameters.AddWithValue("@puesto", puesto);
+            sqlcmd.Parameters.AddWithValue("@celular", celular);
+            sqlcmd.Parameters.AddWithValue("@tipoUs", tipoUs);
+            sqlcmd.Parameters.AddWithValue("@userReg", userReg);
+            sqlcmd.Parameters.AddWithValue("@correo", correo);
+
+            if (accion == "NEW")
+            {
+
+                SqlParameter result = sqlcmd.Parameters.Add("@codigoSocio", SqlDbType.Int);
+                result.Direction = ParameterDirection.Output;
+                result.Size = 100;
+                sqlcmd.ExecuteNonQuery();
+                int parRes = (int)sqlcmd.Parameters["@codigoSocio"].Value;
+                res = Convert.ToString(parRes);
+            }
+
+            else
+            {
+                sqlcmd.Parameters.AddWithValue("@accion", accion);
+                res = Convert.ToString(sqlcmd.ExecuteNonQuery());
+
+            }
+
+
+            return res;
+
 
 
 
