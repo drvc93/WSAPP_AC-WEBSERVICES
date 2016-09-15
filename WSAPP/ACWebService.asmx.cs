@@ -170,6 +170,35 @@ namespace WSAPP
 
         }
 
+        [WebMethod]
+        public string  InsertSocioSeccion(string codSocio , string codSeccion)
+        {
+
+            string res = "NO";
+            SqlConnection cn = con.conexion();
+            SqlCommand sqlcmd = new SqlCommand("SPI_AC_SECCION_SOCIO", cn);
+            sqlcmd.Connection = cn;
+            sqlcmd.CommandType = CommandType.StoredProcedure;
+            cn.Open();
+
+            sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
+        
+                int  var = sqlcmd.ExecuteNonQuery();
+            if (var > 0)
+            {
+                res = "OK";
+
+            }
+            
+
+
+            return res;
+
+
+
+        }
+
 
         #endregion
     }
