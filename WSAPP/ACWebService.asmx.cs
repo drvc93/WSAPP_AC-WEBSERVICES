@@ -63,6 +63,7 @@ namespace WSAPP
                     sc.FechaRegistro = dt.Rows[i]["FechaRegistro"].ToString();
                     sc.Estado = dt.Rows[i]["Estado"].ToString();
                     sc.Correo = dt.Rows[i]["Correo"].ToString();
+                    sc.TipoUsuario  = dt.Rows[i]["Tipo"].ToString();
 
                     listSoc.Add(sc);
 
