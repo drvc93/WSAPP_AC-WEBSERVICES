@@ -30,3 +30,4 @@ c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.A
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Release\WSAPP.dll
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Release\WSAPP.pdb
+C:\Users\drvc_\Documents\Visual Studio 2015\Projects\WSAPP\WSAPP\obj\Release\WSAPP.csprojResolveAssemblyReference.cache

@@ -79,7 +79,7 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public Seccion[] GetSecciones(string accion, string codSeccion) {
+        public Seccion[] GetSecciones(string accion, string codSeccion ,string codSocio) {
 
             List<Seccion> listSecc = new List<Seccion>();
 
@@ -90,7 +90,8 @@ namespace WSAPP
             dap.SelectCommand.CommandType = CommandType.StoredProcedure;
             dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
             dap.SelectCommand.Parameters.AddWithValue("@codSeccion", codSeccion);
-            
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+
             dap.Fill(dt);
             cn.Close();
 
@@ -158,8 +159,9 @@ namespace WSAPP
 
             else
             {
-                sqlcmd.Parameters.AddWithValue("@accion", accion);
-                res = Convert.ToString(sqlcmd.ExecuteNonQuery());
+                sqlcmd.Parameters.AddWithValue("@codigoSocio", Convert.ToInt32(codSocio));
+
+                res = Convert.ToString(codSocio);
 
             }
 
@@ -184,6 +186,7 @@ namespace WSAPP
 
             sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
             sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
+
         
                 int  var = sqlcmd.ExecuteNonQuery();
             if (var > 0)

@@ -20,7 +20,7 @@ editando este archivo MSBuild. Para conocer más acerca de esto, visite http://g
       <publishTime>09/10/2016 13:21:38</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.Agent.Intercept.dll">
-      <publishTime>07/12/2015 19:04:38</publishTime>
+      <publishTime>12/07/2015 19:04:38</publishTime>
     </File>
     <File Include="bin/Microsoft.AI.DependencyCollector.dll">
       <publishTime>06/06/2016 15:40:16</publishTime>
@@ -80,7 +80,7 @@ editando este archivo MSBuild. Para conocer más acerca de esto, visite http://g
       <publishTime>06/18/2015 20:19:46</publishTime>
     </File>
     <File Include="bin/WSAPP.dll">
-      <publishTime>09/17/2016 09:54:17</publishTime>
+      <publishTime>09/18/2016 01:58:50</publishTime>
     </File>
     <File Include="packages.config">
       <publishTime>09/10/2016 13:21:39</publishTime>
