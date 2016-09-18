@@ -79,6 +79,91 @@ namespace WSAPP
         }
 
         [WebMethod]
+
+        public ConceptoPago[] GetConceptosPago (string accion , string codConcepto)
+        {
+
+            List<ConceptoPago> listaConcepto = new List<ConceptoPago>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_LISTAR_CONCEPTO_PAGO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    ConceptoPago c = new ConceptoPago();
+                     c.CodConcepto = dt.Rows[i]["CodConcepto"].ToString();
+                    c.Descripcion = dt.Rows[i]["Descripcion"].ToString();
+                    c.Monto = dt.Rows[i]["Monto"].ToString();
+                    c.UserReg = dt.Rows[i]["UserReg"].ToString();
+                    c.FechaReg = dt.Rows[i]["FechaReg"].ToString();
+
+
+
+                    listaConcepto.Add(c);
+
+                }
+
+
+            }
+
+            return listaConcepto.ToArray();
+
+        }
+
+        [WebMethod]
+        public Banco [] GetBancos (string accion , string codBanco)
+        {
+            List<Banco> listBanco = new List<Banco>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_BANCOS", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    Banco b = new Banco();
+                   b.CodBanco  = dt.Rows[i]["codBanco"].ToString();
+                    b.NombreLargo = dt.Rows[i]["NombreLargo"].ToString();
+                    b.NombreCorto = dt.Rows[i]["NombreCorto"].ToString();
+                    b.NroCuenta  = dt.Rows[i]["NroCuenta"].ToString();
+
+
+                    listBanco.Add(b);
+
+                }
+
+
+            }
+
+            return listBanco.ToArray();
+
+
+        }
+
+        [WebMethod]
         public Seccion[] GetSecciones(string accion, string codSeccion ,string codSocio) {
 
             List<Seccion> listSecc = new List<Seccion>();
