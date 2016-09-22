@@ -80,6 +80,52 @@ namespace WSAPP
 
         [WebMethod]
 
+        public SocioPuesto [] getSociosPuesto(string accion , string CodSocio)
+        {
+
+            List<SocioPuesto> listSoc = new List<SocioPuesto>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_SOCIO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSociodet", Convert.ToInt32(CodSocio));
+            
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    SocioPuesto sc = new SocioPuesto();
+                    sc.CodSocio = dt.Rows[i]["CodigoSocio"].ToString();
+                    sc.NroPuesto = dt.Rows[i]["NumeroPuesto"].ToString();
+                    sc.Estado= dt.Rows[i]["Estado"].ToString();
+                    sc.FechaReg = dt.Rows[i]["FechaaReg"].ToString();
+                    sc.UserReg = dt.Rows[i]["UserReg"].ToString();
+
+
+
+
+
+                    listSoc.Add(sc);
+
+                }
+
+
+            }
+
+            return listSoc.ToArray();
+
+        }
+
+        [WebMethod]
+
         public ConceptoPago[] GetConceptosPago (string accion , string codConcepto)
         {
 
