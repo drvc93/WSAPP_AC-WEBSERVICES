@@ -108,6 +108,7 @@ namespace WSAPP
                     sc.Estado= dt.Rows[i]["Estado"].ToString();
                     sc.FechaReg = dt.Rows[i]["FechaaReg"].ToString();
                     sc.UserReg = dt.Rows[i]["UserReg"].ToString();
+                    sc.CodSeccion = dt.Rows[i]["CodigoSeccion"].ToString();
 
 
 
@@ -305,35 +306,67 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public string  InsertSocioSeccion(string codSocio , string codSeccion)
+        public string  InsertSocioPuesto(string codSocio , string nroPuesto, string codSeccion , string userReg)
         {
 
             string res = "NO";
-            SqlConnection cn = con.conexion();
-            SqlCommand sqlcmd = new SqlCommand("SPI_AC_SECCION_SOCIO", cn);
+
+            if (InsertPuesto(nroPuesto, codSeccion) == true)
+            {
+                SqlConnection cn = con.conexion();
+            SqlCommand sqlcmd = new SqlCommand("SPI_AC_PUESTO_SOCIO", cn);
             sqlcmd.Connection = cn;
             sqlcmd.CommandType = CommandType.StoredProcedure;
             cn.Open();
 
             sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
             sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
+            sqlcmd.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+            sqlcmd.Parameters.AddWithValue("@user",  userReg);
 
-        
+
                 int  var = sqlcmd.ExecuteNonQuery();
             if (var > 0)
             {
                 res = "OK";
 
             }
-            
 
 
+            }
             return res;
 
 
 
         }
 
+
+        public bool InsertPuesto(string nroPuesto , string codSeccion )
+        {
+
+            bool result = false;
+            SqlConnection cn = con.conexion();
+            SqlCommand sqlcmd = new SqlCommand("SPI_PUESTO", cn);
+            sqlcmd.Connection = cn;
+            sqlcmd.CommandType = CommandType.StoredProcedure;
+            cn.Open();
+
+            sqlcmd.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+            sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
+
+
+            int var = sqlcmd.ExecuteNonQuery();
+            if (var > 0)
+            {
+                result = true;
+
+            }
+
+
+
+            return result;
+
+        }
 
         #endregion
     }

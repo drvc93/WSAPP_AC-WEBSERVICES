@@ -12,18 +12,19 @@ namespace WSAPP.Clases
         private string estado;
         private string fechaReg;
         private string userReg;
-
+        private string codSeccion;
      
         public SocioPuesto() { }
         
-        public SocioPuesto (string CodSocio , string NroPuesto , string Estado , string FechaReg ,string UserReg)
+        public SocioPuesto (string CodSocio , string NroPuesto , string Estado , string FechaReg ,string UserReg, string CodSeccion)
         {
 
-            this.CodSocio = this.CodSocio;
+            this.CodSocio = CodSocio;
             this.NroPuesto = NroPuesto;
             this.Estado = Estado;
             this.FechaReg = FechaReg;
-            this.UserReg = this.UserReg;
+            this.UserReg =UserReg;
+            this.CodSeccion =  CodSeccion;
         }
 
         public string CodSocio
@@ -91,6 +92,17 @@ namespace WSAPP.Clases
             }
         }
 
+        public string CodSeccion
+        {
+            get
+            {
+                return codSeccion;
+            }
 
+            set
+            {
+                this.codSeccion = value;
+            }
+        }
     }
 }
