@@ -292,7 +292,7 @@ namespace WSAPP
             else
             {
                 sqlcmd.Parameters.AddWithValue("@codigoSocio", Convert.ToInt32(codSocio));
-
+                sqlcmd.ExecuteNonQuery();
                 res = Convert.ToString(codSocio);
 
             }
