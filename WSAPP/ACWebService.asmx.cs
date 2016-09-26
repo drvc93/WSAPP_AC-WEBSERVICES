@@ -6,6 +6,8 @@ using System.Web.Services;
 using WSAPP.Clases;
 using System.Data.SqlClient;
 using System.Data;
+using System.Net.Mail;
+using System.Text;
 
 namespace WSAPP
 {
@@ -13,7 +15,7 @@ namespace WSAPP
     /// Descripción breve de ACWebService
     /// </summary>
     /// 
-    
+
     [WebService(Namespace = "http://drvc2110-001-site2.btempurl.com/")]
     [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
     [System.ComponentModel.ToolboxItem(false)]
@@ -26,12 +28,12 @@ namespace WSAPP
 
 
         Conexion con = new Conexion();
-        
+
         #region ACMENCONLE
-        
+
         [WebMethod]
 
-        public Socio[] GetUsuario(string acccion , string username, string password) 
+        public Socio[] GetUsuario(string acccion, string username, string password)
         {
             List<Socio> listSoc = new List<Socio>();
 
@@ -46,24 +48,24 @@ namespace WSAPP
             dap.Fill(dt);
             cn.Close();
 
-            if  (dt!= null)
+            if (dt != null)
             {
 
-                for (int i =  0; i < dt.Rows.Count; i++)
+                for (int i = 0; i < dt.Rows.Count; i++)
                 {
 
                     Socio sc = new Socio();
-                    sc.CodSocio =  Convert.ToInt32( dt.Rows[i]["CodigoSocio"].ToString());
+                    sc.CodSocio = Convert.ToInt32(dt.Rows[i]["CodigoSocio"].ToString());
                     sc.Dni = dt.Rows[i]["Dni"].ToString();
                     sc.Nombres = dt.Rows[i]["Nombres"].ToString();
                     sc.ApellidoPat = dt.Rows[i]["ApellidoPat"].ToString();
-                    sc.ApellidoMat  = dt.Rows[i]["ApellidoMat"].ToString();
-                    sc.Puesto= dt.Rows[i]["Puesto"].ToString();
+                    sc.ApellidoMat = dt.Rows[i]["ApellidoMat"].ToString();
+                    sc.Puesto = dt.Rows[i]["Puesto"].ToString();
                     sc.Celular = dt.Rows[i]["Celular"].ToString();
                     sc.FechaRegistro = dt.Rows[i]["FechaRegistro"].ToString();
                     sc.Estado = dt.Rows[i]["Estado"].ToString();
                     sc.Correo = dt.Rows[i]["Correo"].ToString();
-                    sc.TipoUsuario  = dt.Rows[i]["Tipo"].ToString();
+                    sc.TipoUsuario = dt.Rows[i]["Tipo"].ToString();
 
                     listSoc.Add(sc);
 
@@ -80,7 +82,7 @@ namespace WSAPP
 
         [WebMethod]
 
-        public SocioPuesto [] getSociosPuesto(string accion , string CodSocio)
+        public SocioPuesto[] getSociosPuesto(string accion, string CodSocio)
         {
 
             List<SocioPuesto> listSoc = new List<SocioPuesto>();
@@ -92,7 +94,7 @@ namespace WSAPP
             dap.SelectCommand.CommandType = CommandType.StoredProcedure;
             dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
             dap.SelectCommand.Parameters.AddWithValue("@codSociodet", Convert.ToInt32(CodSocio));
-            
+
             dap.Fill(dt);
             cn.Close();
 
@@ -105,7 +107,7 @@ namespace WSAPP
                     SocioPuesto sc = new SocioPuesto();
                     sc.CodSocio = dt.Rows[i]["CodigoSocio"].ToString();
                     sc.NroPuesto = dt.Rows[i]["NumeroPuesto"].ToString();
-                    sc.Estado= dt.Rows[i]["Estado"].ToString();
+                    sc.Estado = dt.Rows[i]["Estado"].ToString();
                     sc.FechaReg = dt.Rows[i]["FechaaReg"].ToString();
                     sc.UserReg = dt.Rows[i]["UserReg"].ToString();
                     sc.CodSeccion = dt.Rows[i]["CodigoSeccion"].ToString();
@@ -127,14 +129,14 @@ namespace WSAPP
 
         [WebMethod]
 
-        public ConceptoPago[] GetConceptosPago (string accion , string codConcepto)
+        public ConceptoPago[] GetConceptosPago(string accion, string codConcepto)
         {
 
             List<ConceptoPago> listaConcepto = new List<ConceptoPago>();
 
             SqlConnection cn = con.conexion();
             cn.Open();
-            SqlDataAdapter dap = new SqlDataAdapter("SP_LISTAR_CONCEPTO_PAGO", cn);
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_CONCEPTO_PAGO", cn);
             DataTable dt = new DataTable();
             dap.SelectCommand.CommandType = CommandType.StoredProcedure;
             dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
@@ -150,7 +152,7 @@ namespace WSAPP
                 {
 
                     ConceptoPago c = new ConceptoPago();
-                     c.CodConcepto = dt.Rows[i]["CodConcepto"].ToString();
+                    c.CodConcepto = dt.Rows[i]["CodConcepto"].ToString();
                     c.Descripcion = dt.Rows[i]["Descripcion"].ToString();
                     c.Monto = dt.Rows[i]["Monto"].ToString();
                     c.UserReg = dt.Rows[i]["UserReg"].ToString();
@@ -170,7 +172,7 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public Banco [] GetBancos (string accion , string codBanco)
+        public Banco[] GetBancos(string accion, string codBanco)
         {
             List<Banco> listBanco = new List<Banco>();
 
@@ -192,10 +194,10 @@ namespace WSAPP
                 {
 
                     Banco b = new Banco();
-                   b.CodBanco  = dt.Rows[i]["codBanco"].ToString();
+                    b.CodBanco = dt.Rows[i]["codBanco"].ToString();
                     b.NombreLargo = dt.Rows[i]["NombreLargo"].ToString();
                     b.NombreCorto = dt.Rows[i]["NombreCorto"].ToString();
-                    b.NroCuenta  = dt.Rows[i]["NroCuenta"].ToString();
+                    b.NroCuenta = dt.Rows[i]["NroCuenta"].ToString();
 
 
                     listBanco.Add(b);
@@ -211,7 +213,8 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public Seccion[] GetSecciones(string accion, string codSeccion ,string codSocio) {
+        public Seccion[] GetSecciones(string accion, string codSeccion, string codSocio)
+        {
 
             List<Seccion> listSecc = new List<Seccion>();
 
@@ -237,7 +240,7 @@ namespace WSAPP
                     sec.Codigo = dt.Rows[i]["CodigoSeccion"].ToString();
                     sec.Descripcion = dt.Rows[i]["DescripSeccion"].ToString();
                     sec.Fecha = dt.Rows[i]["Fecha"].ToString();
-                   
+
 
                     listSecc.Add(sec);
 
@@ -256,18 +259,18 @@ namespace WSAPP
 
         [WebMethod]
 
-        public string InserSocio(string accion,string codSocio ,string dni, string nombres, string apePat , string apeMat ,
-                                    string puesto, string celular,string tipoUs,string userReg,string correo)
+        public string InserSocio(string accion, string codSocio, string dni, string nombres, string apePat, string apeMat,
+                                    string puesto, string celular, string tipoUs, string userReg, string correo)
         {
             string res = "";
-             SqlConnection cn = con.conexion();
+            SqlConnection cn = con.conexion();
             SqlCommand sqlcmd = new SqlCommand("SPI_AC_SOCIO", cn);
             sqlcmd.Connection = cn;
             sqlcmd.CommandType = CommandType.StoredProcedure;
             cn.Open();
 
             sqlcmd.Parameters.AddWithValue("@accion", accion);
-           
+
             sqlcmd.Parameters.AddWithValue("@dni", dni);
             sqlcmd.Parameters.AddWithValue("@nombres", nombres.Trim().ToUpper());
             sqlcmd.Parameters.AddWithValue("@apePat", apePat.Trim().ToUpper());
@@ -285,7 +288,7 @@ namespace WSAPP
                 result.Direction = ParameterDirection.Output;
                 result.Size = 100;
                 sqlcmd.ExecuteNonQuery();
-                int parRes = (int)sqlcmd.Parameters["@codigoSocio"].Value;
+                int parRes = (int) sqlcmd.Parameters["@codigoSocio"].Value;
                 res = Convert.ToString(parRes);
             }
 
@@ -306,7 +309,7 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public string  InsertSocioPuesto(string codSocio , string nroPuesto, string codSeccion , string userReg)
+        public string InsertSocioPuesto(string codSocio, string nroPuesto, string codSeccion, string userReg)
         {
 
             string res = "NO";
@@ -314,23 +317,23 @@ namespace WSAPP
             if (InsertPuesto(nroPuesto, codSeccion) == true)
             {
                 SqlConnection cn = con.conexion();
-            SqlCommand sqlcmd = new SqlCommand("SPI_AC_PUESTO_SOCIO", cn);
-            sqlcmd.Connection = cn;
-            sqlcmd.CommandType = CommandType.StoredProcedure;
-            cn.Open();
+                SqlCommand sqlcmd = new SqlCommand("SPI_AC_PUESTO_SOCIO", cn);
+                sqlcmd.Connection = cn;
+                sqlcmd.CommandType = CommandType.StoredProcedure;
+                cn.Open();
 
-            sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
-            sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
-            sqlcmd.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
-            sqlcmd.Parameters.AddWithValue("@user",  userReg);
+                sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+                sqlcmd.Parameters.AddWithValue("@codSeccion", Convert.ToInt32(codSeccion));
+                sqlcmd.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+                sqlcmd.Parameters.AddWithValue("@user", userReg);
 
 
-                int  var = sqlcmd.ExecuteNonQuery();
-            if (var > 0)
-            {
-                res = "OK";
+                int var = sqlcmd.ExecuteNonQuery();
+                if (var > 0)
+                {
+                    res = "OK";
 
-            }
+                }
 
 
             }
@@ -341,7 +344,7 @@ namespace WSAPP
         }
 
 
-        public bool InsertPuesto(string nroPuesto , string codSeccion )
+        public bool InsertPuesto(string nroPuesto, string codSeccion)
         {
 
             bool result = false;
@@ -359,6 +362,225 @@ namespace WSAPP
             if (var > 0)
             {
                 result = true;
+
+            }
+
+
+
+            return result;
+
+        }
+
+
+        [WebMethod]
+        public string[] getPuestosPorSocio(string accion, string Dni)
+        {
+
+            List<string> listResult = new List<string>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_SOCIO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@userName", Dni);
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+
+                    string srt = dt.Rows[i]["NumeroPuesto"].ToString();
+
+
+
+                    listResult.Add(srt);
+
+                }
+
+
+            }
+
+            return listResult.ToArray();
+
+        }
+
+        [WebMethod]
+        public string InsertPago(string accion, string codSocio, string codConcepto, string nroOpe, string codBanco, string observacion, string monto, string codPuesto, string fechaPago)
+        {
+
+
+
+
+            string res = "NO";
+            try
+            {
+
+                SqlConnection cn = con.conexion();
+                SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
+                sqlcmd.Connection = cn;
+                sqlcmd.CommandType = CommandType.StoredProcedure;
+                cn.Open();
+
+                sqlcmd.Parameters.AddWithValue("@accion", accion);
+                sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+                sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+                sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
+                sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
+                sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
+                sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
+                sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
+                sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
+
+
+                int var = sqlcmd.ExecuteNonQuery();
+                if (var > 0)
+                {
+                    res = "OK";
+
+                }
+
+                Socio s = GetSocioEmail("2", codSocio);
+                string concepto = GetConsultasPago("1", 0,  Convert.ToInt32( codConcepto));
+                string currFecha = GetConsultasPago("3", 0, 0);
+                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto ,currFecha,nroOpe);
+
+            }
+            catch (Exception e)
+            {
+
+                res = e.Message;
+            }
+
+
+            return res;
+
+
+
+
+        }
+
+
+        public void SentMail(string nomUser, string correo, string concepto, string monto,string fecha, string nroOperacion)
+        {
+
+            SmtpClient client = new SmtpClient();
+            client.Port = 587;
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
+
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Confirmacion de Pago!</h1> </br> <h4 style='color: #2e6c80;'>Socio : " + nomUser+"</h4>" + " </br> <h4 style='color: #2e6c80;'>Monto : " + monto + "  soles</h4>" + " </br> <h4 style='color: #2e6c80;'>Fecha : " + fecha + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Concepto : " + concepto + "  </h4>" +" </br> <h4 style='color: #2e6c80;'>Nro.Operación : " + nroOperacion + "  </h4>";
+
+            MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Confirmación de pago",htmlmsj);
+            mm.IsBodyHtml = true;
+
+            mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+            client.Send(mm);
+
+
+
+        }
+
+
+        public string GetConsultasPago(string accion ,  int codbanco , int codConcepto)
+        {
+
+
+           string result = "";
+            
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_PAGO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codBanco", codbanco);
+            dap.SelectCommand.Parameters.AddWithValue("@codConcepto", codConcepto);
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                   
+                       
+                        result = dt.Rows[i]["result"].ToString();
+                       
+                        
+                    
+
+                }
+
+
+            }
+
+
+
+            return result;
+
+
+        }
+        public Socio GetSocioEmail(string accion, string codSocio)
+        {
+
+            List<Socio> listSoc = new List<Socio>();
+            Socio result = new Socio();
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_LISTAR_SOCIO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    if ((dt.Rows[i]["CodigoSocio"].ToString()) == codSocio)
+                    {
+                        Socio sc = new Socio();
+                        sc.CodSocio = Convert.ToInt32(dt.Rows[i]["CodigoSocio"].ToString());
+                        sc.Dni = dt.Rows[i]["Dni"].ToString();
+                        sc.Nombres = dt.Rows[i]["Nombres"].ToString();
+                        sc.ApellidoPat = dt.Rows[i]["ApellidoPat"].ToString();
+                        sc.ApellidoMat = dt.Rows[i]["ApellidoMat"].ToString();
+                        sc.Puesto = dt.Rows[i]["Puesto"].ToString();
+                        sc.Celular = dt.Rows[i]["Celular"].ToString();
+                        sc.FechaRegistro = dt.Rows[i]["FechaRegistro"].ToString();
+                        sc.Estado = dt.Rows[i]["Estado"].ToString();
+                        sc.Correo = dt.Rows[i]["Correo"].ToString();
+                        sc.TipoUsuario = dt.Rows[i]["Tipo"].ToString();
+
+                        result = sc;
+                        break;
+
+                    }
+
+                }
+
 
             }
 
