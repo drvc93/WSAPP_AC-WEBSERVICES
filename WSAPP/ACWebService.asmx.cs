@@ -450,7 +450,7 @@ namespace WSAPP
                 Socio s = GetSocioEmail("2", codSocio);
                 string concepto = GetConsultasPago("1", 0,  Convert.ToInt32( codConcepto));
                 string currFecha = GetConsultasPago("3", 0, 0);
-                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto ,currFecha,nroOpe);
+                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto ,currFecha,nroOpe,  codPuesto);
 
             }
             catch (Exception e)
@@ -468,7 +468,7 @@ namespace WSAPP
         }
 
 
-        public void SentMail(string nomUser, string correo, string concepto, string monto,string fecha, string nroOperacion)
+        public void SentMail(string nomUser, string correo, string concepto, string monto,string fecha, string nroOperacion, string nroPuesto)
         {
 
             SmtpClient client = new SmtpClient();
@@ -480,7 +480,7 @@ namespace WSAPP
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
 
-            String htmlmsj = "<h1 style='color: #5e9ca0;'>Confirmacion de Pago!</h1> </br> <h4 style='color: #2e6c80;'>Socio : " + nomUser+"</h4>" + " </br> <h4 style='color: #2e6c80;'>Monto : " + monto + "  soles</h4>" + " </br> <h4 style='color: #2e6c80;'>Fecha : " + fecha + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Concepto : " + concepto + "  </h4>" +" </br> <h4 style='color: #2e6c80;'>Nro.Operación : " + nroOperacion + "  </h4>";
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Confirmacion de Pago!</h1> </br> <h4 style='color: #2e6c80;'>Socio : " + nomUser+"</h4>" + " </br> <h4 style='color: #2e6c80;'>Monto : " + monto + "  soles</h4>" + " </br> <h4 style='color: #2e6c80;'>Fecha : " + fecha + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Concepto : " + concepto + "  </h4>" +" </br> <h4 style='color: #2e6c80;'>Nro.Operación : " + nroOperacion + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Nro.Puesto : " + nroPuesto + "  </h4>";
 
             MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Confirmación de pago",htmlmsj);
             mm.IsBodyHtml = true;
