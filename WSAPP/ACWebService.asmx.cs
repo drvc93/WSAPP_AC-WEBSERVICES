@@ -493,6 +493,40 @@ namespace WSAPP
 
         }
 
+        [WebMethod]
+        public string GetFechaMaxMinPago (string accion , string TipoFecha , string codSocio , string nroPuesto)
+        {
+
+            string result = "";
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_PAGO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@tipoFecha", TipoFecha);
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null  && dt.Rows.Count>0)
+            {
+
+              
+                    result = dt.Rows[0]["result"].ToString();
+
+
+
+            }
+
+
+
+            return result;
+        }
 
         public string GetConsultasPago(string accion ,  int codbanco , int codConcepto)
         {
@@ -590,6 +624,54 @@ namespace WSAPP
 
         }
 
+        [WebMethod]
+        public CPagos [] GetRepPagos(string accion ,string codSocio, string nroPuesto)
+        {
+
+            List<CPagos> listpagos = new List<CPagos>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_REPORTE_PAGOS", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    CPagos c = new CPagos();
+                  
+                    c.Nombres = dt.Rows[i]["Nombres"].ToString();
+                    c.FechaPago = dt.Rows[i]["FPago"].ToString();
+                    c.Seccion = dt.Rows[i]["DescripSeccion"].ToString();
+                    c.Monto = dt.Rows[i]["Monto"].ToString();
+                    c.Banco = dt.Rows[i]["Banco"].ToString();
+                    c.NroPuesto = dt.Rows[i]["nroPuesto"].ToString();
+                    c.Estado = dt.Rows[i]["Estado"].ToString();
+
+                    listpagos.Add(c);
+
+                }
+
+
+            }
+
+            return listpagos.ToArray();
+
+
+
+
+        }
         #endregion
     }
 }
