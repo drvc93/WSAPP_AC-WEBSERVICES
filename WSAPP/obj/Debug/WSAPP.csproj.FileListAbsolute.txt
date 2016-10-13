@@ -28,6 +28,6 @@ c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.A
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.AI.WindowsServer.xml
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.ApplicationInsights.xml
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Debug\WSAPP.csprojResolveAssemblyReference.cache
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Debug\WSAPP.dll
 c:\users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Debug\WSAPP.pdb
+C:\Users\drvc_\documents\visual studio 2015\Projects\WSAPP\WSAPP\obj\Debug\WSAPP.csprojResolveAssemblyReference.cache

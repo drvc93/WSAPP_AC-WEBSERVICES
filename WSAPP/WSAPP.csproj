@@ -124,6 +124,7 @@
     <Compile Include="Clases\Conexion.cs" />
     <Compile Include="Clases\Constantes.cs" />
     <Compile Include="Clases\CPagos.cs" />
+    <Compile Include="Clases\SaldoConcepto.cs" />
     <Compile Include="Clases\Seccion.cs" />
     <Compile Include="Clases\SocioPuesto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

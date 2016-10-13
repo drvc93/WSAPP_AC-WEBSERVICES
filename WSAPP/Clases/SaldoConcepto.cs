@@ -14,7 +14,7 @@ namespace WSAPP.Clases
 
         public SaldoConcepto() { }
 
-        public SaldoConcepto(string Cod , string saldo , string pago)
+        public SaldoConcepto(string Cod, string saldo, string pago)
         {
 
             this.codConcepto = Cod;

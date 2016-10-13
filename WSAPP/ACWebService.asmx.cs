@@ -127,6 +127,9 @@ namespace WSAPP
 
         }
 
+
+
+
         [WebMethod]
 
         public ConceptoPago[] GetConceptosPago(string accion, string codConcepto)
@@ -170,6 +173,90 @@ namespace WSAPP
             return listaConcepto.ToArray();
 
         }
+
+        [WebMethod]
+
+        public string GetSeccionFromSocio(string accion, string codSocio, string nroPuesto)
+        {
+
+
+            string result = "";
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_GENERALES", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null && dt.Rows.Count > 0)
+            {
+
+
+                result = dt.Rows[0]["Seccion"].ToString();
+
+
+
+            }
+
+
+
+            return result;
+
+
+
+        }
+
+        [WebMethod]
+        public SaldoConcepto[] GetSaldoPorConceptos(string accion, string codSocio, string nroPuesto)
+        {
+
+
+            List<SaldoConcepto> listC = new List<SaldoConcepto>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTA_SALDOS", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+
+
+                SaldoConcepto c1 = new SaldoConcepto("1", dt.Rows[0]["debeVigilancia"].ToString(), dt.Rows[0]["PagoVigilancia"].ToString());
+                SaldoConcepto c2 = new SaldoConcepto("2", dt.Rows[0]["debeAguaLuz"].ToString(), dt.Rows[0]["PagoAguaLuz"].ToString());
+                SaldoConcepto c3 = new SaldoConcepto("3", dt.Rows[0]["debeSrvComunes"].ToString(), dt.Rows[0]["SrvComunes"].ToString());
+
+                listC.Add(c1);
+                listC.Add(c2);
+                listC.Add(c3);
+
+
+
+
+            }
+
+            return listC.ToArray();
+
+
+
+        }
+
 
         [WebMethod]
         public Banco[] GetBancos(string accion, string codBanco)
@@ -448,9 +535,9 @@ namespace WSAPP
                 }
 
                 Socio s = GetSocioEmail("2", codSocio);
-                string concepto = GetConsultasPago("1", 0,  Convert.ToInt32( codConcepto));
+                string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
                 string currFecha = GetConsultasPago("3", 0, 0);
-                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto ,currFecha,nroOpe,  codPuesto);
+                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
 
             }
             catch (Exception e)
@@ -468,7 +555,7 @@ namespace WSAPP
         }
 
 
-        public void SentMail(string nomUser, string correo, string concepto, string monto,string fecha, string nroOperacion, string nroPuesto)
+        public void SentMail(string nomUser, string correo, string concepto, string monto, string fecha, string nroOperacion, string nroPuesto)
         {
 
             SmtpClient client = new SmtpClient();
@@ -480,9 +567,9 @@ namespace WSAPP
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
 
-            String htmlmsj = "<h1 style='color: #5e9ca0;'>Confirmacion de Pago!</h1> </br> <h4 style='color: #2e6c80;'>Socio : " + nomUser+"</h4>" + " </br> <h4 style='color: #2e6c80;'>Monto : " + monto + "  soles</h4>" + " </br> <h4 style='color: #2e6c80;'>Fecha : " + fecha + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Concepto : " + concepto + "  </h4>" +" </br> <h4 style='color: #2e6c80;'>Nro.Operación : " + nroOperacion + "  </h4>"+ " </br> <h4 style='color: #2e6c80;'>Nro.Puesto : " + nroPuesto + "  </h4>";
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Confirmacion de Pago!</h1> </br> <h4 style='color: #2e6c80;'>Socio : " + nomUser + "</h4>" + " </br> <h4 style='color: #2e6c80;'>Monto : " + monto + "  soles</h4>" + " </br> <h4 style='color: #2e6c80;'>Fecha : " + fecha + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Concepto : " + concepto + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Nro.Operación : " + nroOperacion + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Nro.Puesto : " + nroPuesto + "  </h4>";
 
-            MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Confirmación de pago",htmlmsj);
+            MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Confirmación de pago", htmlmsj);
             mm.IsBodyHtml = true;
 
             mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
@@ -494,7 +581,7 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public string GetFechaMaxMinPago (string accion , string TipoFecha , string codSocio , string nroPuesto)
+        public string GetFechaMaxMinPago(string accion, string TipoFecha, string codSocio, string nroPuesto)
         {
 
             string result = "";
@@ -513,11 +600,11 @@ namespace WSAPP
             dap.Fill(dt);
             cn.Close();
 
-            if (dt != null  && dt.Rows.Count>0)
+            if (dt != null && dt.Rows.Count > 0)
             {
 
-              
-                    result = dt.Rows[0]["result"].ToString();
+
+                result = dt.Rows[0]["result"].ToString();
 
 
 
@@ -528,12 +615,12 @@ namespace WSAPP
             return result;
         }
 
-        public string GetConsultasPago(string accion ,  int codbanco , int codConcepto)
+        public string GetConsultasPago(string accion, int codbanco, int codConcepto)
         {
 
 
-           string result = "";
-            
+            string result = "";
+
             SqlConnection cn = con.conexion();
             cn.Open();
             SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_PAGO", cn);
@@ -553,12 +640,12 @@ namespace WSAPP
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
 
-                   
-                       
-                        result = dt.Rows[i]["result"].ToString();
-                       
-                        
-                    
+
+
+                    result = dt.Rows[i]["result"].ToString();
+
+
+
 
                 }
 
@@ -625,7 +712,7 @@ namespace WSAPP
         }
 
         [WebMethod]
-        public CPagos [] GetRepPagos(string accion ,string codSocio, string nroPuesto)
+        public CPagos[] GetRepPagos(string accion, string codSocio, string nroPuesto)
         {
 
             List<CPagos> listpagos = new List<CPagos>();
@@ -650,7 +737,7 @@ namespace WSAPP
                 {
 
                     CPagos c = new CPagos();
-                  
+
                     c.Nombres = dt.Rows[i]["Nombres"].ToString();
                     c.FechaPago = dt.Rows[i]["FPago"].ToString();
                     c.Seccion = dt.Rows[i]["DescripSeccion"].ToString();
