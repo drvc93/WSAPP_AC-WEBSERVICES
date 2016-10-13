@@ -215,6 +215,56 @@ namespace WSAPP
         }
 
         [WebMethod]
+
+         public DetalleSaldo [] GetDetalleSaldo(string accion, string codSocio, string nroPuesto)
+        {
+            List<DetalleSaldo> listDet = new List<DetalleSaldo>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTA_SALDOS", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+
+                for (int i =  0; i< dt.Rows.Count; i++)
+                {
+                    DetalleSaldo d = new DetalleSaldo();
+                    d.CodConcepto  = dt.Rows[i]["codConcepto"].ToString();
+                    d.Mes = dt.Rows[i]["mes"].ToString();
+                    d.Anio = dt.Rows[i]["anio"].ToString();
+                    d.Estado = dt.Rows[i]["estado"].ToString();
+                    d.Monto = dt.Rows[i]["monto"].ToString();
+
+                    /*  add  object*/
+                    listDet.Add(d);
+
+
+                }
+                
+
+                
+
+
+
+
+            }
+
+            return listDet.ToArray();
+
+        }
+
+
+        [WebMethod]
         public SaldoConcepto[] GetSaldoPorConceptos(string accion, string codSocio, string nroPuesto)
         {
 
