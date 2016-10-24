@@ -213,6 +213,54 @@ namespace WSAPP
 
 
         }
+        [WebMethod]
+        public  string VerificarDeudaSocio(string accion ,string  codSocio , string nroPuesto)
+        {
+            decimal monto = 0;
+            string result="";
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTA_SALDOS", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                  
+                   monto =  Convert.ToDecimal ( dt.Rows[i]["Monto"].ToString());
+                   
+                    /*  add  object*/
+                  
+
+
+                }
+
+
+            }
+            else
+            {
+                result = "Error";
+            }
+
+            if (monto > 0){
+
+                result = Convert.ToString(monto);
+
+            }
+
+            return result;
+
+        }
+
 
         [WebMethod]
 
@@ -626,6 +674,60 @@ namespace WSAPP
 
             client.Send(mm);
 
+
+
+        }
+
+        [WebMethod]
+
+        public string  SentMailContacto (string nombre   ,string celular ,string correo ,string mensaje )
+        {
+            SmtpClient client = new SmtpClient();
+            client.Port = 587;
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
+
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Mensaje de contacto !</h1> </br> <h4 style='color: #2e6c80;'>Nombres : " + nombre + "</h4>" + " </br> <h4 style='color: #2e6c80;'>Celular : " +celular + " </h4>" + " </br> <h4 style='color: #2e6c80;'>Correo : " + correo + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Mensaje : " +  mensaje + "  </h4>" ;
+            
+
+            MailMessage mm = new MailMessage("acmenconle.info@gmail.com", "acmenconle.info@gmail.com", "Mensaje de  contacto", htmlmsj);
+            mm.IsBodyHtml = true;
+
+            mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+            client.Send(mm);
+
+            SentMailConfirmacion(correo, nombre);
+            return "OK";
+
+        }
+
+        public string SentMailConfirmacion (string correo,string  nombre)
+        {
+            SmtpClient client = new SmtpClient();
+            client.Port = 587;
+            client.Host = "smtp.gmail.com";
+            client.EnableSsl = true;
+            client.Timeout = 10000;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
+
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Hola " + nombre +"  tu mensaje fue enviado correctamente, en el transcurso del día nos estaremos comunicando contigo.!</h1> ";
+
+
+            MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Mensaje de confirmación", htmlmsj);
+            mm.IsBodyHtml = true;
+
+            mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+            client.Send(mm);
+
+            return "OK";
 
 
         }
