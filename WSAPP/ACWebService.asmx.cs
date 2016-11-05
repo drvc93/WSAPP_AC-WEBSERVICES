@@ -214,10 +214,10 @@ namespace WSAPP
 
         }
         [WebMethod]
-        public  string VerificarDeudaSocio(string accion ,string  codSocio , string nroPuesto)
+        public string VerificarDeudaSocio(string accion, string codSocio, string nroPuesto)
         {
             decimal monto = 0;
-            string result="";
+            string result = "";
             SqlConnection cn = con.conexion();
             cn.Open();
             SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTA_SALDOS", cn);
@@ -235,11 +235,11 @@ namespace WSAPP
 
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                  
-                   monto =  Convert.ToDecimal ( dt.Rows[i]["Monto"].ToString());
-                   
+
+                    monto = Convert.ToDecimal(dt.Rows[i]["Monto"].ToString());
+
                     /*  add  object*/
-                  
+
 
 
                 }
@@ -251,7 +251,8 @@ namespace WSAPP
                 result = "Error";
             }
 
-            if (monto > 0){
+            if (monto > 0)
+            {
 
                 result = Convert.ToString(monto);
 
@@ -264,7 +265,7 @@ namespace WSAPP
 
         [WebMethod]
 
-         public DetalleSaldo [] GetDetalleSaldo(string accion, string codSocio, string nroPuesto)
+        public DetalleSaldo[] GetDetalleSaldo(string accion, string codSocio, string nroPuesto)
         {
             List<DetalleSaldo> listDet = new List<DetalleSaldo>();
 
@@ -284,10 +285,10 @@ namespace WSAPP
             {
 
 
-                for (int i =  0; i< dt.Rows.Count; i++)
+                for (int i = 0; i < dt.Rows.Count; i++)
                 {
                     DetalleSaldo d = new DetalleSaldo();
-                    d.CodConcepto  = dt.Rows[i]["codConcepto"].ToString();
+                    d.CodConcepto = dt.Rows[i]["codConcepto"].ToString();
                     d.Mes = dt.Rows[i]["mes"].ToString();
                     d.Anio = dt.Rows[i]["anio"].ToString();
                     d.Estado = dt.Rows[i]["estado"].ToString();
@@ -298,9 +299,9 @@ namespace WSAPP
 
 
                 }
-                
 
-                
+
+
 
 
 
@@ -605,45 +606,57 @@ namespace WSAPP
 
 
             string res = "NO";
-            try
+            int verificarpago = 0;
+
+            verificarpago = this.ComprobarPagoExiste("5", codSocio, codConcepto, codPuesto);
+
+            if (verificarpago <= 0)
             {
-
-                SqlConnection cn = con.conexion();
-                SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
-                sqlcmd.Connection = cn;
-                sqlcmd.CommandType = CommandType.StoredProcedure;
-                cn.Open();
-
-                sqlcmd.Parameters.AddWithValue("@accion", accion);
-                sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
-                sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
-                sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
-                sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
-                sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
-                sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
-                sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
-                sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
-
-
-                int var = sqlcmd.ExecuteNonQuery();
-                if (var > 0)
+                try
                 {
-                    res = "OK";
+
+                    SqlConnection cn = con.conexion();
+                    SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
+                    sqlcmd.Connection = cn;
+                    sqlcmd.CommandType = CommandType.StoredProcedure;
+                    cn.Open();
+
+                    sqlcmd.Parameters.AddWithValue("@accion", accion);
+                    sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+                    sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+                    sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
+                    sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
+                    sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
+                    sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
+                    sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
+                    sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
+
+
+                    int var = sqlcmd.ExecuteNonQuery();
+                    if (var > 0)
+                    {
+                        res = "OK";
+
+                    }
+
+                    Socio s = GetSocioEmail("2", codSocio);
+                    string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
+                    string currFecha = GetConsultasPago("3", 0, 0);
+                    SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
 
                 }
+                catch (Exception e)
+                {
 
-                Socio s = GetSocioEmail("2", codSocio);
-                string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
-                string currFecha = GetConsultasPago("3", 0, 0);
-                SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
+                    res = e.Message;
+                }
 
             }
-            catch (Exception e)
+            else if (verificarpago > 0)
             {
+                res = "PAGADO";
 
-                res = e.Message;
             }
-
 
             return res;
 
@@ -651,6 +664,41 @@ namespace WSAPP
 
 
         }
+
+
+        public int ComprobarPagoExiste(string accion, string codSocio, string codConcepto, string codNropuesto)
+        {
+
+
+            string res = "0";
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_PAGO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+            dap.SelectCommand.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(codNropuesto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                res = dt.Rows[0]["Pagos"].ToString();
+
+            }
+
+            return Convert.ToInt32(res);
+
+
+
+        }
+
+
 
 
         public void SentMail(string nomUser, string correo, string concepto, string monto, string fecha, string nroOperacion, string nroPuesto)
@@ -680,7 +728,7 @@ namespace WSAPP
 
         [WebMethod]
 
-        public string  SentMailContacto (string nombre   ,string celular ,string correo ,string mensaje )
+        public string SentMailContacto(string nombre, string celular, string correo, string mensaje)
         {
             SmtpClient client = new SmtpClient();
             client.Port = 587;
@@ -691,8 +739,8 @@ namespace WSAPP
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
 
-            String htmlmsj = "<h1 style='color: #5e9ca0;'>Mensaje de contacto !</h1> </br> <h4 style='color: #2e6c80;'>Nombres : " + nombre + "</h4>" + " </br> <h4 style='color: #2e6c80;'>Celular : " +celular + " </h4>" + " </br> <h4 style='color: #2e6c80;'>Correo : " + correo + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Mensaje : " +  mensaje + "  </h4>" ;
-            
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Mensaje de contacto !</h1> </br> <h4 style='color: #2e6c80;'>Nombres : " + nombre + "</h4>" + " </br> <h4 style='color: #2e6c80;'>Celular : " + celular + " </h4>" + " </br> <h4 style='color: #2e6c80;'>Correo : " + correo + "  </h4>" + " </br> <h4 style='color: #2e6c80;'>Mensaje : " + mensaje + "  </h4>";
+
 
             MailMessage mm = new MailMessage("acmenconle.info@gmail.com", "acmenconle.info@gmail.com", "Mensaje de  contacto", htmlmsj);
             mm.IsBodyHtml = true;
@@ -706,7 +754,7 @@ namespace WSAPP
 
         }
 
-        public string SentMailConfirmacion (string correo,string  nombre)
+        public string SentMailConfirmacion(string correo, string nombre)
         {
             SmtpClient client = new SmtpClient();
             client.Port = 587;
@@ -717,7 +765,7 @@ namespace WSAPP
             client.UseDefaultCredentials = false;
             client.Credentials = new System.Net.NetworkCredential("acmenconle.info@gmail.com", "probando123");
 
-            String htmlmsj = "<h1 style='color: #5e9ca0;'>Hola " + nombre +"  tu mensaje fue enviado correctamente, en el transcurso del día nos estaremos comunicando contigo.!</h1> ";
+            String htmlmsj = "<h1 style='color: #5e9ca0;'>Hola " + nombre + "  tu mensaje fue enviado correctamente, en el transcurso del día nos estaremos comunicando contigo.!</h1> ";
 
 
             MailMessage mm = new MailMessage("acmenconle.info@gmail.com", correo, "Mensaje de confirmación", htmlmsj);
