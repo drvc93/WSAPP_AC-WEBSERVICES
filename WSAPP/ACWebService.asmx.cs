@@ -208,6 +208,7 @@ namespace WSAPP
                     e.DescripCorta = dt.Rows[i]["DescripCorta"].ToString();
                     /*  add  object*/
                     listDet.Add(e);
+                    
 
                     
                 }
