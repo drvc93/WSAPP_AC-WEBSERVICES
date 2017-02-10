@@ -98,6 +98,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\PublishProfiles\Default Settings.pubxml" />
     <None Include="Properties\PublishProfiles\ftp.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -125,6 +126,7 @@
     <Compile Include="Clases\Constantes.cs" />
     <Compile Include="Clases\CPagos.cs" />
     <Compile Include="Clases\DetalleSaldo.cs" />
+    <Compile Include="Clases\Evento.cs" />
     <Compile Include="Clases\SaldoConcepto.cs" />
     <Compile Include="Clases\Seccion.cs" />
     <Compile Include="Clases\SocioPuesto.cs" />

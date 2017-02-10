@@ -176,6 +176,55 @@ namespace WSAPP
 
         [WebMethod]
 
+        public Evento[] GetListaEventos(string accion )
+        {
+
+
+            List<Evento> listDet = new List<Evento>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_GENERALES", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
+           
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    Evento e = new Evento();
+                    e.CodEvento = dt.Rows[i]["CodigoEvento"].ToString();
+                    e.Anio = dt.Rows[i]["Anio"].ToString();
+                    e.Mes = dt.Rows[i]["Mes"].ToString();
+                    e.Dia = dt.Rows[i]["dia"].ToString();
+                    e.Hora = dt.Rows[i]["Hora"].ToString();
+                    e.DescripCorta = dt.Rows[i]["DescripCorta"].ToString();
+                    /*  add  object*/
+                    listDet.Add(e);
+
+                    
+                }
+
+
+
+
+
+
+
+            }
+
+            return listDet.ToArray();
+        }
+
+        [WebMethod]
+
         public string GetSeccionFromSocio(string accion, string codSocio, string nroPuesto)
         {
 
@@ -607,55 +656,64 @@ namespace WSAPP
 
             string res = "NO";
             int verificarpago = 0;
+            bool verfFecha = ValidarFechaPago(Convert.ToDateTime(fechaPago));
 
             verificarpago = this.ComprobarPagoExiste("5", codSocio, codConcepto, codPuesto);
 
             if (verificarpago <= 0)
             {
-                try
+                if (verfFecha == true)
                 {
-
-                    SqlConnection cn = con.conexion();
-                    SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
-                    sqlcmd.Connection = cn;
-                    sqlcmd.CommandType = CommandType.StoredProcedure;
-                    cn.Open();
-
-                    sqlcmd.Parameters.AddWithValue("@accion", accion);
-                    sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
-                    sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
-                    sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
-                    sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
-                    sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
-                    sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
-                    sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
-                    sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
-
-
-                    int var = sqlcmd.ExecuteNonQuery();
-                    if (var > 0)
+                    try
                     {
-                        res = "OK";
+
+                        SqlConnection cn = con.conexion();
+                        SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
+                        sqlcmd.Connection = cn;
+                        sqlcmd.CommandType = CommandType.StoredProcedure;
+                        cn.Open();
+
+                        sqlcmd.Parameters.AddWithValue("@accion", accion);
+                        sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+                        sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+                        sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
+                        sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
+                        sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
+                        sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
+                        sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
+                        sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
+
+
+                        int var = sqlcmd.ExecuteNonQuery();
+                        if (var > 0)
+                        {
+                            res = "OK";
+
+                        }
+
+                        Socio s = GetSocioEmail("2", codSocio);
+                        string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
+                        string currFecha = GetConsultasPago("3", 0, 0);
+                        SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
 
                     }
+                    catch (Exception e)
+                    {
 
-                    Socio s = GetSocioEmail("2", codSocio);
-                    string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
-                    string currFecha = GetConsultasPago("3", 0, 0);
-                    SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
+                        res = e.Message;
+                    }
 
                 }
-                catch (Exception e)
-                {
-
-                    res = e.Message;
-                }
-
             }
             else if (verificarpago > 0)
             {
                 res = "PAGADO";
 
+            }
+             if (verfFecha == false)
+            {
+
+                res = "FECHA";
             }
 
             return res;
@@ -665,6 +723,26 @@ namespace WSAPP
 
         }
 
+        public  bool ValidarFechaPago(DateTime  fechaPago)
+        {
+            bool res = true;
+
+            DateTime dtnow = DateTime.Now;
+            if (fechaPago > dtnow)
+            {
+                res = false;
+
+            }
+            else
+            {
+                res = true;
+
+            }
+
+            return res;
+
+
+        }
 
         public int ComprobarPagoExiste(string accion, string codSocio, string codConcepto, string codNropuesto)
         {

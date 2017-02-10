@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="drvc2110-001-site2" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\drvc_\\documents\\visual\ studio\ 2015\\Projects\\WSAPP\\WSAPP\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^C:\\Users\\drvc_\\documents\\visual\ studio\ 2015\\Projects\\WSAPP\\WSAPP\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+</parameters>
