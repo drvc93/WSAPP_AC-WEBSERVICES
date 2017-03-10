@@ -176,7 +176,7 @@ namespace WSAPP
 
         [WebMethod]
 
-        public Evento[] GetListaEventos(string accion )
+        public Evento[] GetListaEventos(string accion)
         {
 
 
@@ -188,7 +188,7 @@ namespace WSAPP
             DataTable dt = new DataTable();
             dap.SelectCommand.CommandType = CommandType.StoredProcedure;
             dap.SelectCommand.Parameters.AddWithValue("@accion", accion);
-           
+
 
             dap.Fill(dt);
             cn.Close();
@@ -208,9 +208,9 @@ namespace WSAPP
                     e.DescripCorta = dt.Rows[i]["DescripCorta"].ToString();
                     /*  add  object*/
                     listDet.Add(e);
-                    
 
-                    
+
+
                 }
 
 
@@ -390,10 +390,12 @@ namespace WSAPP
                 SaldoConcepto c1 = new SaldoConcepto("1", dt.Rows[0]["debeVigilancia"].ToString(), dt.Rows[0]["PagoVigilancia"].ToString());
                 SaldoConcepto c2 = new SaldoConcepto("2", dt.Rows[0]["debeAguaLuz"].ToString(), dt.Rows[0]["PagoAguaLuz"].ToString());
                 SaldoConcepto c3 = new SaldoConcepto("3", dt.Rows[0]["debeSrvComunes"].ToString(), dt.Rows[0]["SrvComunes"].ToString());
+                SaldoConcepto c4 = new SaldoConcepto("4", dt.Rows[0]["debeDeudas"].ToString(), "0");
 
                 listC.Add(c1);
                 listC.Add(c2);
                 listC.Add(c3);
+                listC.Add(c4);
 
 
 
@@ -663,47 +665,57 @@ namespace WSAPP
 
             if (verificarpago <= 0)
             {
-                if (verfFecha == true)
+                if (TieneSaldoDeudaAntigua(Convert.ToInt32(codSocio), Convert.ToInt32(codPuesto), Convert.ToDecimal(monto), codConcepto) == true   )
                 {
-                    try
+
+                    if (verfFecha == true)
                     {
-
-                        SqlConnection cn = con.conexion();
-                        SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
-                        sqlcmd.Connection = cn;
-                        sqlcmd.CommandType = CommandType.StoredProcedure;
-                        cn.Open();
-
-                        sqlcmd.Parameters.AddWithValue("@accion", accion);
-                        sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
-                        sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
-                        sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
-                        sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
-                        sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
-                        sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
-                        sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
-                        sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
-
-
-                        int var = sqlcmd.ExecuteNonQuery();
-                        if (var > 0)
+                        try
                         {
-                            res = "OK";
+
+                            SqlConnection cn = con.conexion();
+                            SqlCommand sqlcmd = new SqlCommand("SPI_AC_PAGOS", cn);
+                            sqlcmd.Connection = cn;
+                            sqlcmd.CommandType = CommandType.StoredProcedure;
+                            cn.Open();
+
+                            sqlcmd.Parameters.AddWithValue("@accion", accion);
+                            sqlcmd.Parameters.AddWithValue("@codConcepto", Convert.ToInt32(codConcepto));
+                            sqlcmd.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+                            sqlcmd.Parameters.AddWithValue("@nroOp", nroOpe);
+                            sqlcmd.Parameters.AddWithValue("@codBanco", Convert.ToInt32(codBanco));
+                            sqlcmd.Parameters.AddWithValue("@Observacion", observacion);
+                            sqlcmd.Parameters.AddWithValue("@fechaPago", Convert.ToDateTime(fechaPago));
+                            sqlcmd.Parameters.AddWithValue("@monto", Convert.ToDecimal(monto));
+                            sqlcmd.Parameters.AddWithValue("@codPuesto", Convert.ToInt32(codPuesto));
+
+
+                            int var = sqlcmd.ExecuteNonQuery();
+                            if (var > 0)
+                            {
+                                res = "OK";
+
+                            }
+
+                            Socio s = GetSocioEmail("2", codSocio);
+                            string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
+                            string currFecha = GetConsultasPago("3", 0, 0);
+                            SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
 
                         }
+                        catch (Exception e)
+                        {
 
-                        Socio s = GetSocioEmail("2", codSocio);
-                        string concepto = GetConsultasPago("1", 0, Convert.ToInt32(codConcepto));
-                        string currFecha = GetConsultasPago("3", 0, 0);
-                        SentMail(s.ApellidoPat.ToUpper() + " " + s.ApellidoMat.ToUpper() + " " + s.Nombres.ToUpper(), s.Correo, concepto, monto, currFecha, nroOpe, codPuesto);
+                            res = e.Message;
+                        }
 
                     }
-                    catch (Exception e)
-                    {
 
-                        res = e.Message;
-                    }
+                }
+                else
+                {
 
+                    res = "NOSALDO";
                 }
             }
             else if (verificarpago > 0)
@@ -711,7 +723,7 @@ namespace WSAPP
                 res = "PAGADO";
 
             }
-             if (verfFecha == false)
+            if (verfFecha == false)
             {
 
                 res = "FECHA";
@@ -724,7 +736,57 @@ namespace WSAPP
 
         }
 
-        public  bool ValidarFechaPago(DateTime  fechaPago)
+        public bool TieneSaldoDeudaAntigua(int CodSocio, int nroPuesto, decimal monto ,string codConcepto)
+        {
+
+            
+
+            bool res = false;
+            decimal deuda = 0;
+
+            
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_PAGO", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", "6");
+
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(CodSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@nroPuesto", Convert.ToInt32(nroPuesto));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                deuda = Convert.ToDecimal(dt.Rows[0]["deuda"].ToString());
+
+                if ((deuda - monto) >= 0)
+                {
+                    res = true;
+
+                }
+                else
+                {
+                    res = false;
+                }
+
+            }
+
+            if (codConcepto  != "4")
+            {
+                res = true;
+
+            }
+
+            return res;
+
+        }
+
+        public bool ValidarFechaPago(DateTime fechaPago)
         {
             bool res = true;
 
@@ -776,6 +838,7 @@ namespace WSAPP
 
 
         }
+
 
 
 
