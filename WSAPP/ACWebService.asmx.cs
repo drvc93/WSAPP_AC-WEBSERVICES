@@ -496,6 +496,105 @@ namespace WSAPP
         }
 
         [WebMethod]
+        public SocioEncuesta[] GetEncuestasSocios(string accion, string codSocio)
+        {
+
+            List<SocioEncuesta> listSecc = new List<SocioEncuesta>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_GENERALES", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", "3");
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    SocioEncuesta enc = new SocioEncuesta();
+                    enc.CodEcnuesta = dt.Rows[i]["codEncuesta"].ToString();
+                    enc.Descripcion = dt.Rows[i]["Descrip"].ToString();
+                    enc.Fecha = dt.Rows[i]["fecha"].ToString();
+
+
+                    listSecc.Add(enc);
+
+                }
+
+
+            }
+
+            return listSecc.ToArray();
+
+
+
+
+
+        }
+
+
+
+        [WebMethod]
+        public SocioPregunta[] GetSocioPregunta(string accion, string codSocio, string codEncuesta)
+        {
+
+            List<SocioPregunta> listSecc = new List<SocioPregunta>();
+
+            SqlConnection cn = con.conexion();
+            cn.Open();
+            SqlDataAdapter dap = new SqlDataAdapter("SP_AC_CONSULTAS_GENERALES", cn);
+            DataTable dt = new DataTable();
+            dap.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dap.SelectCommand.Parameters.AddWithValue("@accion", "4");
+            dap.SelectCommand.Parameters.AddWithValue("@codSocio", Convert.ToInt32(codSocio));
+            dap.SelectCommand.Parameters.AddWithValue("@codEncuensta", Convert.ToInt32(codEncuesta));
+
+            dap.Fill(dt);
+            cn.Close();
+
+            if (dt != null)
+            {
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+
+                    SocioPregunta pre = new SocioPregunta();
+
+                    pre.CodEncuesta = dt.Rows[i]["codEncuesta"].ToString();
+                    pre.Orden = dt.Rows[i]["Orden"].ToString();
+                    pre.CodSocio = dt.Rows[i]["CodigoSocio"].ToString();
+                    pre.Valor = dt.Rows[i]["Valor"].ToString();
+                    pre.FechaRegistro = dt.Rows[i]["Fecha"].ToString();
+                    pre.Tipo = dt.Rows[i]["Tipo"].ToString();
+                    pre.Pregunta = dt.Rows[i]["Pregunta"].ToString();
+
+
+                    listSecc.Add(pre);
+
+                }
+
+
+            }
+
+            return listSecc.ToArray();
+
+
+
+
+
+        }
+
+
+
+
+        [WebMethod]
 
         public string InserSocio(string accion, string codSocio, string dni, string nombres, string apePat, string apeMat,
                                     string puesto, string celular, string tipoUs, string userReg, string correo)
@@ -578,6 +677,40 @@ namespace WSAPP
             return res;
 
 
+
+        }
+
+        [WebMethod]
+        public string InsertSocioPregunta(int codEncuesta, int Orden, int codSocio, string valor)
+        {
+
+
+
+            string res = "NO";
+
+
+            SqlConnection cn = con.conexion();
+            SqlCommand sqlcmd = new SqlCommand("SPI_AC_INSERTAR_SOCIO_ENCUESTA", cn);
+            sqlcmd.Connection = cn;
+            sqlcmd.CommandType = CommandType.StoredProcedure;
+            cn.Open();
+
+            sqlcmd.Parameters.AddWithValue("@codEncuesta",codEncuesta);
+            sqlcmd.Parameters.AddWithValue("@Orden", Orden);
+            sqlcmd.Parameters.AddWithValue("@CodSocio", codSocio);
+            sqlcmd.Parameters.AddWithValue("@Valor", valor);
+
+
+            int var = sqlcmd.ExecuteNonQuery();
+            if (var > 0)
+            {
+                res = "OK";
+
+            }
+
+
+
+            return res;
 
         }
 
@@ -665,7 +798,7 @@ namespace WSAPP
 
             if (verificarpago <= 0)
             {
-                if (TieneSaldoDeudaAntigua(Convert.ToInt32(codSocio), Convert.ToInt32(codPuesto), Convert.ToDecimal(monto), codConcepto) == true   )
+                if (TieneSaldoDeudaAntigua(Convert.ToInt32(codSocio), Convert.ToInt32(codPuesto), Convert.ToDecimal(monto), codConcepto) == true)
                 {
 
                     if (verfFecha == true)
@@ -736,15 +869,15 @@ namespace WSAPP
 
         }
 
-        public bool TieneSaldoDeudaAntigua(int CodSocio, int nroPuesto, decimal monto ,string codConcepto)
+        public bool TieneSaldoDeudaAntigua(int CodSocio, int nroPuesto, decimal monto, string codConcepto)
         {
 
-            
+
 
             bool res = false;
             decimal deuda = 0;
 
-            
+
 
             SqlConnection cn = con.conexion();
             cn.Open();
@@ -776,7 +909,7 @@ namespace WSAPP
 
             }
 
-            if (codConcepto  != "4")
+            if (codConcepto != "4")
             {
                 res = true;
 
@@ -1101,6 +1234,8 @@ namespace WSAPP
 
 
         }
+
+
         #endregion
     }
 }

@@ -129,6 +129,8 @@
     <Compile Include="Clases\Evento.cs" />
     <Compile Include="Clases\SaldoConcepto.cs" />
     <Compile Include="Clases\Seccion.cs" />
+    <Compile Include="Clases\SocioEncuesta.cs" />
+    <Compile Include="Clases\SocioPregunta.cs" />
     <Compile Include="Clases\SocioPuesto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Clases\Socio.cs" />
